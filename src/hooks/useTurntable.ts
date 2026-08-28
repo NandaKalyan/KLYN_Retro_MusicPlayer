@@ -152,10 +152,14 @@ export function useTurntable(tracks: Track[]) {
         return;
       }
 
-      triggerCrossfade(oldArt);
+            triggerCrossfade(oldArt);
       setTrackIndex(index);
       trackIndexRef.current = index;
       setProgress(0);
+
+      if (wasPlaying) {
+        isSwitchingRef.current = true;
+      }
 
       audio.pause();
       audio.src = tracks[index].src;
@@ -163,9 +167,6 @@ export function useTurntable(tracks: Track[]) {
       setDuration(0);
       setPlaybackState('loading');
 
-      if (wasPlaying) {
-        isSwitchingRef.current = true;
-      }
       wasPlayingRef.current = true;
     },
     [tracks, triggerCrossfade, beginPlayback]
@@ -212,12 +213,14 @@ export function useTurntable(tracks: Track[]) {
       wasPlayingRef.current = true;
     };
 
-    const onPlay = () => {
+        const onPlay = () => {
+      isSwitchingRef.current = false;
       setPlaybackState('playing');
       phaseStartRef.current = performance.now();
       phaseFromSpeedRef.current = currentSpeedRef.current;
       targetSpeedRef.current = 1;
     };
+
 
     const onPause = () => {
       if (audio.ended) return;
